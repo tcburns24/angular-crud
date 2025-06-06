@@ -1,0 +1,78 @@
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const mysql = require("mysql2");
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+// database configuration
+const db = mysql.createConnection({
+  host: "127.0.0.1",
+  user: "root",
+  password: "taro",
+  database: "insurance_quotes",
+});
+
+db.connect((err) => {
+  if (err) throw err;
+  console.log("✅ connected to MySQL!");
+});
+
+// Endpoint: POST a new employee
+app.post("/api/employees", (req, res) => {
+  const { name, email, hometown, luckynumber, department } = req.body;
+  const sql =
+    "INSERT INTO employees (name, email, hometown, luckynumber, department) VALUES (?, ?, ?, ?, ?)";
+  db.query(
+    sql,
+    [name, email, hometown, luckynumber, department],
+    (err, result) => {
+      if (err) return res.status(500).send(err);
+      res.send({ message: "employee added", employeeId: result.insertId });
+    }
+  );
+});
+
+// ENDPOINT: GET all employees
+app.get("/api/employees", (req, res) => {
+  db.query("SELECT * FROM employees", (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.send(results);
+  });
+});
+
+// Endpoint: Delete an employee (by ID)
+app.delete("/api/employees/:id", (req, res) => {
+  const id = req.params.id;
+  db.query("DELETE FROM employees WHERE id = ?", [id], (err, result) => {
+    if (err) return res.status(500).send(err);
+    res.send({
+      message: "Employee deleted",
+      affectedRows: result.affectedRows,
+    });
+  });
+});
+
+// Endpoint: Delete multiple employees in bulk
+app.post("/api/employees/bulk-delete", (req, res) => {
+  const ids = req.body.ids;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(500).send({ error: "You didn't provide any IDs" });
+  }
+
+  const placeholders = ids.map(() => "?").join(",");
+  const sql = `DELETE FROM employees WHERE id IN (${placeholders})`;
+
+  db.query(sql, ids, (err, result) => {
+    if (err) return res.status(500).send(err);
+    res.send({
+      message: "All those employees are toast!🍞",
+      affectedRows: result.affectedRows,
+    });
+  });
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));
