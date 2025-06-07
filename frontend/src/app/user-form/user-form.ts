@@ -74,6 +74,8 @@ export class UserFormComponent {
       });
   }
 
+  editEmployee(id: number) {}
+
   submitForm() {
     this.http
       .post<any>('http://localhost:3000/api/employees', this.employee)

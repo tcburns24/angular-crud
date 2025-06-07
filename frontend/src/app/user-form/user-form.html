@@ -60,6 +60,7 @@
           <th>Hometown</th>
           <th>Lucky #</th>
           <th>Department</th>
+          <th>Notes</th>
           <th>🗑</th>
         </tr>
       </thead>
@@ -77,10 +78,51 @@
           <td>{{ u.hometown }}</td>
           <td>{{ u.luckynumber }}</td>
           <td>{{ u.department }}</td>
+          <td>{{ u.notes }}</td>
           <td><button (click)="deleteEmployee(u.id)">Delete</button></td>
+          <td><button (click)="editEmployee(u.id)">Edit</button></td>
         </tr>
       </tbody>
     </table>
+    <!-- Edit Modal -->
+    <div class="modal" *ngIf="isEditModalOpen">
+      <div class="modal-content">
+        <h3>Edit Employee</h3>
+        <form (ngSubmit)="submitEditForm()">
+          <label>Name:</label>
+          <input [(ngModel)]="selectedEmployee.name" name="editName" />
+
+          <label>Email:</label>
+          <input [(ngModel)]="selectedEmployee.email" name="editEmail" />
+
+          <label>Hometown:</label>
+          <input [(ngModel)]="selectedEmployee.hometown" name="editHometown" />
+
+          <label>Lucky Number:</label>
+          <input
+            type="number"
+            [(ngModel)]="selectedEmployee.luckynumber"
+            name="editLucky"
+          />
+
+          <label>Department:</label>
+          <input
+            [(ngModel)]="selectedEmployee.department"
+            name="editDepartment"
+          />
+
+          <label>Notes:</label>
+          <textarea
+            [(ngModel)]="selectedEmployee.notes"
+            name="editNotes"
+          ></textarea>
+
+          <button type="submit">Save</button>
+          <button type="button" (click)="closeEditModal()">Cancel</button>
+        </form>
+      </div>
+    </div>
+
     <div>
       <button (click)="bulkDelete()" [disabled]="selectedIds.length === 0">
         Delete All Selected

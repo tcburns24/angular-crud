@@ -22,12 +22,12 @@ db.connect((err) => {
 
 // Endpoint: POST a new employee
 app.post("/api/employees", (req, res) => {
-  const { name, email, hometown, luckynumber, department } = req.body;
+  const { name, email, hometown, luckynumber, department, notes } = req.body;
   const sql =
-    "INSERT INTO employees (name, email, hometown, luckynumber, department) VALUES (?, ?, ?, ?, ?)";
+    "INSERT INTO employees (name, email, hometown, luckynumber, department, notes) VALUES (?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
-    [name, email, hometown, luckynumber, department],
+    [name, email, hometown, luckynumber, department, notes],
     (err, result) => {
       if (err) return res.status(500).send(err);
       res.send({ message: "employee added", employeeId: result.insertId });
