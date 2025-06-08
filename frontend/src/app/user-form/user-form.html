@@ -61,6 +61,7 @@
           <th>Lucky #</th>
           <th>Department</th>
           <th>Notes</th>
+          <th>✏️</th>
           <th>🗑</th>
         </tr>
       </thead>
@@ -79,8 +80,8 @@
           <td>{{ u.luckynumber }}</td>
           <td>{{ u.department }}</td>
           <td>{{ u.notes }}</td>
+          <td><button (click)="openEditModal(u)">Edit</button></td>
           <td><button (click)="deleteEmployee(u.id)">Delete</button></td>
-          <td><button (click)="editEmployee(u.id)">Edit</button></td>
         </tr>
       </tbody>
     </table>

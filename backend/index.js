@@ -75,4 +75,29 @@ app.post("/api/employees/bulk-delete", (req, res) => {
   });
 });
 
+// Endpoint: PUT (update) an employee
+app.put("/api/employees/:id", (req, res) => {
+  const id = req.params.id;
+  const { name, email, hometown, luckynumber, department, notes } = req.body;
+  const sql = `
+    UPDATE employees SET
+      name = ?,
+      email = ?,
+      hometown = ?,
+      luckynumber = ?,
+      department = ?,
+      notes = ?
+    WHERE id = ?
+  `;
+  const values = [name, email, hometown, luckynumber, department, notes, id];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("Error updating employee: ", err);
+      return res.status(500).send("DB error");
+    }
+    res.send({ message: "Employee PUT'd successfully ✅" });
+  });
+});
+
 app.listen(3000, () => console.log("Server running on port 3000"));

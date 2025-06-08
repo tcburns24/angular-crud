@@ -21,7 +21,11 @@ export class UserFormComponent {
 
   employees: any[] = [];
 
+  selectedEmployee: any = null;
+
   selectedIds: number[] = [];
+
+  isEditModalOpen: boolean = false;
 
   constructor(private http: HttpClient) {}
 
@@ -74,7 +78,31 @@ export class UserFormComponent {
       });
   }
 
-  editEmployee(id: number) {}
+  openEditModal(employee: any) {
+    this.selectedEmployee = { ...employee };
+    this.isEditModalOpen = true;
+  }
+
+  closeEditModal() {
+    this.selectedEmployee = null;
+    this.isEditModalOpen = false;
+  }
+
+  submitEditForm() {
+    const id = this.selectedEmployee.id;
+
+    this.http
+      .put(`http://localhost:3000/api/employees/${id}`, this.selectedEmployee)
+      .subscribe({
+        next: () => {
+          this.getEmployees();
+          this.closeEditModal();
+        },
+        error: (err) => {
+          console.error('Uh oh! 🚨 Update failed!', err);
+        },
+      });
+  }
 
   submitForm() {
     this.http
