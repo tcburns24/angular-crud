@@ -1,0 +1,17 @@
+<h3>Employee Analytics</h3>
+<table border="1" style="width: 100%; margin-top: 1rem">
+  <thead>
+    <tr>
+      <th>Department</th>
+      <th># of Employees</th>
+      <th>Average Lucky #</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let stat of analytics">
+      <td>{{ stat.department }}</td>
+      <td>{{ stat.departmentCount }}</td>
+      <td>{{ stat.averageLuckyNumber | number:'1.0-2' }}</td>
+    </tr>
+  </tbody>
+</table>

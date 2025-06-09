@@ -13,6 +13,7 @@ const db = mysql.createConnection({
   user: "root",
   password: "taro",
   database: "insurance_quotes",
+  port: 3306,
 });
 
 db.connect((err) => {
@@ -97,6 +98,27 @@ app.put("/api/employees/:id", (req, res) => {
       return res.status(500).send("DB error");
     }
     res.send({ message: "Employee PUT'd successfully ✅" });
+  });
+});
+
+// Endpoint: GET stats
+app.get("/api/employees/analytics", (req, res) => {
+  const sql = `
+    SELECT 
+      COUNT(*) AS total,
+      AVG(luckynumber) AS averageLuckyNumber,
+      department,
+      COUNT(department) AS departmentCount
+    FROM employees
+    GROUP BY department
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("couldn't pull up the stats: ", err);
+      return res.status(500).send("DB error (/stats)");
+    }
+    res.json(results);
   });
 });
 
