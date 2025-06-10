@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { UserFormComponent } from './user-form/user-form';
+import { EmployeeAnalyticsComponent } from './employee-analytics/employee-analytics';
 
 @Component({
   selector: 'app-root',

@@ -1,13 +1,16 @@
-import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-employee-analytics',
   templateUrl: './employee-analytics.html',
-  styleUrl: './employee-analytics.scss',
+  styleUrls: ['./employee-analytics.scss'],
+  imports: [CommonModule, FormsModule, HttpClientModule],
 })
-export class EmployeeAnalytics implements OnInit {
-  analytics: any[] = [];
+export class EmployeeAnalyticsComponent implements OnInit {
+  @Input() analytics: any[] = [];
 
   constructor(private http: HttpClient) {}
 

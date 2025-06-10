@@ -2,11 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { EmployeeAnalyticsComponent } from '../employee-analytics/employee-analytics';
 
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    HttpClientModule,
+    EmployeeAnalyticsComponent,
+  ],
   templateUrl: './user-form.html',
   styleUrls: ['./user-form.scss'],
 })
@@ -20,6 +26,8 @@ export class UserFormComponent {
   };
 
   employees: any[] = [];
+
+  analytics: any[] = [];
 
   selectedEmployee: any = null;
 
@@ -49,6 +57,14 @@ export class UserFormComponent {
       .get<any[]>('http://localhost:3000/api/employees')
       .subscribe((data) => {
         this.employees = data;
+      });
+  }
+
+  getAnalytics() {
+    this.http
+      .get<any[]>('http://localhost:3000/api/employees/analytics')
+      .subscribe((data) => {
+        this.analytics = data;
       });
   }
 
@@ -95,6 +111,7 @@ export class UserFormComponent {
       .put(`http://localhost:3000/api/employees/${id}`, this.selectedEmployee)
       .subscribe({
         next: () => {
+          this.getAnalytics();
           this.getEmployees();
           this.closeEditModal();
         },
@@ -117,6 +134,9 @@ export class UserFormComponent {
           };
 
           this.employees.push(newlyCreatedEmployee);
+
+          this.getAnalytics();
+          this.getEmployees();
 
           this.employee = {
             name: '',
