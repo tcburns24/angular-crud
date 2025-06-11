@@ -169,6 +169,47 @@ app.delete("/api/teams/:id", (req, res) => {
   });
 });
 
+// ===================== 3) SPORTS Endpoints =====================
+// GET all sports
+app.get("/api/sports", (req, res) => {
+  db.query("SELECT * FROM sports", (err, result) => {
+    if (err) return res.status(500).send("Error fetching sports");
+    res.json(result);
+  });
+});
+
+// POST a new sport
+app.post("/api/sports", (req, res) => {
+  const { sport_name, season, max_roster_size } = req.body;
+  const sql =
+    "INSERT INTO sports (sport_name, season, max_roster_size) VALUES (?, ?, ?)";
+  db.query(sql, [sport_name, season, max_roster_size], (err, result) => {
+    if (err) return res.status(500).send("Error adding sport");
+    res.json({ message: "Sport added", sportId: result.insertId });
+  });
+});
+
+// PUT to update a sport
+app.put("/api/sports/:id", (req, res) => {
+  const id = req.params.id;
+  const { sport_name, season, max_roster_size } = req.body;
+  const sql =
+    "UPDATE sports SET sport_name=?, season=?, max_roster_size=? WHERE sport_id=?";
+  db.query(sql, [sport_name, season, max_roster_size, id], (err) => {
+    if (err) return res.status(500).send("Error updating sport");
+    res.json({ message: "Sport updated" });
+  });
+});
+
+// DELETE a sport
+app.delete("/api/sports/:id", (req, res) => {
+  const id = req.params.id;
+  db.query("DELETE FROM sports WHERE sport_id = ?", [id], (err) => {
+    if (err) return res.status(500).send("Error deleting sport");
+    res.json({ message: "Sport deleted" });
+  });
+});
+
 // ===============================================================
 // ===================== EMPLOYEES Endpoints =====================
 // ===============================================================
