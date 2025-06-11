@@ -21,7 +21,7 @@ db.connect((err) => {
   console.log("✅ connected to MySQL!");
 });
 
-// ===================== ATHLETES Endpoints =====================
+// ===================== 1) ATHLETES Endpoints =====================
 
 // Endpoint: GET athletes
 app.get("/api/athletes", (req, res) => {
@@ -105,7 +105,73 @@ app.patch("/api/athletes/:id", (req, res) => {
   });
 });
 
+// Endpoint: DELETE an athlete
+app.delete("/api/athletes/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = `delete from athletes where athlete_id = ?`;
+
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error("🚨 error on DELETE /athletes/:id", err);
+      return res.status(500).send("db error");
+    }
+    res.send({ message: "Athlete successfully deleted 🗑️" });
+  });
+});
+
+// ===================== 2) TEAMS Endpoints =====================
+
+// Endpoint: GET all teams
+app.get("/api/teams", (req, res) => {
+  const sql = "select * from teams";
+  db.query(sql, (req, result) => {
+    if (err) return res.status(500).send("Error fetching teams");
+    res.json(result);
+  });
+});
+
+// Endpoint: POST a new team
+app.post("/api/teams/", (req, res) => {
+  const { sport_id, level, gender, season, coach_name } = req.body;
+  const sql =
+    "insert into teams (sport_id, level, gender, season, coach_name) values (?, ?, ?, ?, ?)";
+  const values = [sport_id, level, gender, season, coach_name];
+
+  db.query(sql, values, (err, result) => {
+    if (err) return res.status(500).send("Error POSTing team");
+    res.json({ message: "Team added", teamId: result.insertId });
+  });
+});
+
+// Endpoint: Update a team
+app.put("/api/teams/:id", (req, res) => {
+  const id = req.params.id;
+  const { sport_id, level, gender, season, coach_name } = req.body;
+  const sql = `
+    UPDATE teams SET sport_id = ?, level = ?, gender = ?, season = ?, coach_name = ? 
+    WHERE team_id = ?
+  `;
+  const values = [sport_id, level, gender, season, coach_name, id];
+
+  db.query(sql, values, (err, result) => {
+    if (err) return res.status(500).send("Error updating team");
+    res.json({ message: "Team updated" });
+  });
+});
+
+// Endpoint: DELETE a team
+app.delete("/api/teams/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "DELETE FROM teams WHERE team_id = ?";
+  db.query(sql, [id], (err, result) => {
+    if (err) return res.status(500).send("Error deleting team");
+    res.json({ message: "Team deleted" });
+  });
+});
+
+// ===============================================================
 // ===================== EMPLOYEES Endpoints =====================
+// ===============================================================
 
 // Endpoint: POST a new employee
 app.post("/api/employees", (req, res) => {

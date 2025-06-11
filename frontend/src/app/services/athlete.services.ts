@@ -25,4 +25,12 @@ export class AthleteService {
   addAthlete(athlete: Athlete): Observable<any> {
     return this.http.post(this.apiUrl, athlete);
   }
+
+  updateAthlete(id: number, athlete: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, athlete);
+  }
+
+  deleteAthlete(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
 }
