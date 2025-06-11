@@ -13,6 +13,9 @@ import { AthleteService, Athlete } from '../services/athlete.services';
 export class Athletes implements OnInit {
   athletes: any[] = [];
   showModal: boolean = false;
+  isEditMode: boolean = false;
+
+  currentEditId: number | null = null;
 
   newAthlete: Athlete = {
     first_name: '',
@@ -40,11 +43,47 @@ export class Athletes implements OnInit {
     });
   }
 
-  openModal(): void {
+  updateAthlete(id: number, updatedAthlete: Athlete): void {
+    this.athleteService.updateAthlete(id, updatedAthlete).subscribe(() => {
+      this.loadAthletes();
+    });
+  }
+
+  deleteAthlete(id: number): void {
+    console.log('🍀 deleteAthlete | id = ', id);
+    this.athleteService.deleteAthlete(id).subscribe(() => {
+      this.loadAthletes();
+    });
+  }
+
+  openAddAthleteModal(): void {
+    this.isEditMode = false;
+    this.newAthlete = {
+      first_name: '',
+      last_name: '',
+      class_year: 'freshman',
+      gender: 'M',
+    };
+    this.showModal = true;
+  }
+
+  openEditAthleteModal(athlete: Athlete): void {
+    this.isEditMode = true;
+    this.newAthlete = { ...athlete };
+    this.currentEditId = athlete.athlete_id!;
     this.showModal = true;
   }
 
   closeModal(): void {
+    this.showModal = false;
+  }
+
+  submitForm() {
+    if (this.isEditMode && this.currentEditId !== null) {
+      this.updateAthlete(this.currentEditId, this.newAthlete);
+    } else {
+      this.addAthlete();
+    }
     this.showModal = false;
   }
 }

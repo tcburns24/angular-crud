@@ -1,6 +1,6 @@
 <h2>Athletes</h2>
 
-<button (click)="openModal()">Add New Athlete</button>
+<button (click)="openAddAthleteModal()">Add New Athlete</button>
 
 <table>
   <thead>
@@ -9,6 +9,8 @@
       <th>Name</th>
       <th>Class Year</th>
       <th>Gender</th>
+      <th>Edit</th>
+      <th>Delete</th>
     </tr>
   </thead>
   <tbody>
@@ -17,6 +19,8 @@
       <td>{{ athlete.first_name }} {{ athlete.last_name }}</td>
       <td>{{ athlete.class_year }}</td>
       <td>{{ athlete.gender }}</td>
+      <td><button (click)="openEditAthleteModal(athlete)">✏️</button></td>
+      <td><button (click)="deleteAthlete(athlete.athlete_id)">🗑️</button></td>
     </tr>
   </tbody>
 </table>
@@ -24,8 +28,8 @@
 <!-- Modal -->
 <div *ngIf="showModal" class="modal">
   <div class="modal-content">
-    <h3>Add New Athlete</h3>
-    <form (ngSubmit)="addAthlete()">
+    <h3>{{ isEditMode ? 'Edit' : 'Add New' }} Athlete</h3>
+    <form (ngSubmit)="submitForm()">
       <label
         >First Name:
         <input
@@ -58,7 +62,7 @@
           <option value="F">Female</option>
         </select> </label
       ><br />
-      <button type="submit">Add Athlete</button>
+      <button type="submit">{{ isEditMode ? 'Update' : 'Submit' }}</button>
       <button type="button" (click)="closeModal()">Cancel</button>
     </form>
   </div>
