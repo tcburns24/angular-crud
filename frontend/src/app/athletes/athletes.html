@@ -9,6 +9,9 @@
       <th>Name</th>
       <th>Class Year</th>
       <th>Gender</th>
+      <th>Fall Sport</th>
+      <th>Winter Sport</th>
+      <th>Spring Sport</th>
       <th>Edit</th>
       <th>Delete</th>
     </tr>
@@ -19,6 +22,9 @@
       <td>{{ athlete.first_name }} {{ athlete.last_name }}</td>
       <td>{{ athlete.class_year }}</td>
       <td>{{ athlete.gender }}</td>
+      <td>{{ athlete.fall_sport || '--' }}</td>
+      <td>{{ athlete.winter_sport || '--' }}</td>
+      <td>{{ athlete.spring_sport || '--' }}</td>
       <td><button (click)="openEditAthleteModal(athlete)">✏️</button></td>
       <td><button (click)="deleteAthlete(athlete.athlete_id)">🗑️</button></td>
     </tr>

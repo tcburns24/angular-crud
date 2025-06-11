@@ -9,16 +9,16 @@ app.use(bodyParser.json());
 
 // database configuration
 const db = mysql.createConnection({
-  host: "127.0.0.1",
-  user: "root",
-  password: "taro",
-  database: "athletic_director",
+  host: "sql5.freesqldatabase.com",
+  user: "sql5784277",
+  password: "ttNMTdYEx5",
+  database: "sql5784277",
   port: 3306,
 });
 
 db.connect((err) => {
   if (err) throw err;
-  console.log("✅ connected to MySQL!");
+  console.log("✅ Connected to FreeSQLDatabase MySQL!");
 });
 
 // ===================== 1) ATHLETES Endpoints =====================
@@ -119,12 +119,49 @@ app.delete("/api/athletes/:id", (req, res) => {
   });
 });
 
+// Endpoint: GET Fall, Winter, Spring sports for athlete
+app.get("/api/athletes-with-sports", (req, res) => {
+  const sql = `
+    SELECT 
+      a.athlete_id,
+      a.first_name,
+      a.last_name,
+      -- subqueries or left joins for each season:
+      (SELECT s.sport_name
+      FROM athlete_teams at
+      JOIN teams t ON at.team_id = t.team_id
+      JOIN sports s ON t.sport_id = s.sport_id
+      WHERE at.athlete_id = a.athlete_id AND s.season = 'fall'
+      LIMIT 1) AS fall_sport,
+
+      (SELECT s.sport_name
+      FROM athlete_teams at
+      JOIN teams t ON at.team_id = t.team_id
+      JOIN sports s ON t.sport_id = s.sport_id
+      WHERE at.athlete_id = a.athlete_id AND s.season = 'winter'
+      LIMIT 1) AS winter_sport,
+
+      (SELECT s.sport_name
+      FROM athlete_teams at
+      JOIN teams t ON at.team_id = t.team_id
+      JOIN sports s ON t.sport_id = s.sport_id
+      WHERE at.athlete_id = a.athlete_id AND s.season = 'spring'
+      LIMIT 1) AS spring_sport
+
+    FROM athletes a;`;
+
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).send("Error athletes-with-sports");
+    res.json(result);
+  });
+});
+
 // ===================== 2) TEAMS Endpoints =====================
 
 // Endpoint: GET all teams
 app.get("/api/teams", (req, res) => {
   const sql = "select * from teams";
-  db.query(sql, (req, result) => {
+  db.query(sql, (err, result) => {
     if (err) return res.status(500).send("Error fetching teams");
     res.json(result);
   });

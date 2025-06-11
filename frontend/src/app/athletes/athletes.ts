@@ -12,6 +12,7 @@ import { AthleteService, Athlete } from '../services/athlete.services';
 })
 export class Athletes implements OnInit {
   athletes: any[] = [];
+  athletesWithSports: any[] = [];
   showModal: boolean = false;
   isEditMode: boolean = false;
 
@@ -28,6 +29,10 @@ export class Athletes implements OnInit {
 
   ngOnInit(): void {
     this.loadAthletes();
+
+    this.athleteService.athletesWithSports$.subscribe((data) => {
+      this.athletesWithSports = data;
+    });
   }
 
   loadAthletes(): void {
@@ -50,7 +55,6 @@ export class Athletes implements OnInit {
   }
 
   deleteAthlete(id: number): void {
-    console.log('🍀 deleteAthlete | id = ', id);
     this.athleteService.deleteAthlete(id).subscribe(() => {
       this.loadAthletes();
     });
