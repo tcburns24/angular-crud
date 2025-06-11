@@ -210,6 +210,92 @@ app.delete("/api/sports/:id", (req, res) => {
   });
 });
 
+// ===================== 4) ATHLETE_TEAMS Endpoints =====================
+// GET all athlete_team relationships
+app.get("/api/athlete_teams", (req, res) => {
+  db.query("SELECT * FROM athlete_teams", (err, result) => {
+    if (err) return res.status(500).send("Error fetching athlete_teams");
+    res.json(result);
+  });
+});
+
+// POST a new relationship
+app.post("/api/athlete_teams", (req, res) => {
+  const {
+    athlete_id,
+    team_id,
+    jersey_number,
+    position,
+    is_captain,
+    notes,
+  } = req.body;
+  const sql = `
+    INSERT INTO athlete_teams (athlete_id, team_id, jersey_number, position, is_captain, notes)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  const values = [
+    athlete_id,
+    team_id,
+    jersey_number,
+    position,
+    is_captain,
+    notes,
+  ];
+
+  db.query(sql, values, (err, result) => {
+    if (err) return res.status(500).send("Error adding athlete_team");
+    res.json({
+      message: "Athlete-Team relationship added",
+      id: result.insertId,
+    });
+  });
+});
+
+// PUT to update a relationship
+app.put("/api/athlete_teams/:id", (req, res) => {
+  const id = req.params.id;
+  const {
+    athlete_id,
+    team_id,
+    jersey_number,
+    position,
+    is_captain,
+    notes,
+  } = req.body;
+  const sql = `
+    UPDATE athlete_teams SET 
+      athlete_id=?, team_id=?, jersey_number=?, position=?, is_captain=?, notes=?
+    WHERE athlete_team_id=?
+  `;
+  const values = [
+    athlete_id,
+    team_id,
+    jersey_number,
+    position,
+    is_captain,
+    notes,
+    id,
+  ];
+
+  db.query(sql, values, (err) => {
+    if (err) return res.status(500).send("Error updating athlete_team");
+    res.json({ message: "Athlete-Team relationship updated" });
+  });
+});
+
+// DELETE a relationship
+app.delete("/api/athlete_teams/:id", (req, res) => {
+  const id = req.params.id;
+  db.query(
+    "DELETE FROM athlete_teams WHERE athlete_team_id = ?",
+    [id],
+    (err) => {
+      if (err) return res.status(500).send("Error deleting athlete_team");
+      res.json({ message: "Athlete-Team relationship deleted" });
+    }
+  );
+});
+
 // ===============================================================
 // ===================== EMPLOYEES Endpoints =====================
 // ===============================================================
