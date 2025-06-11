@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import { UserFormComponent } from './user-form/user-form';
-import { EmployeeAnalyticsComponent } from './employee-analytics/employee-analytics';
+import { Athletes } from './athletes/athletes';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [UserFormComponent],
-  template: `<app-user-form />`,
+  imports: [HttpClientModule, Athletes, FormsModule],
+  template: `<app-athletes />`,
 })
 export class App {}

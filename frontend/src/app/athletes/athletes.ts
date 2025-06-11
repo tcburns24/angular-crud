@@ -1,17 +1,20 @@
-import { Component } from '@angular/core';
-import { AthleteService } from '../services/athlete.services';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { AthleteService, Athlete } from '../services/athlete.services';
 
-@Component({
+/* "Component Decorator" --> */ @Component({
   selector: 'app-athletes',
-  imports: [],
+  standalone: true,
+  imports: [FormsModule, CommonModule],
   templateUrl: './athletes.html',
-  styleUrl: './athletes.scss',
+  styleUrls: ['./athletes.scss'],
 })
-export class Athletes {
+export class Athletes implements OnInit {
   athletes: any[] = [];
   showModal: boolean = false;
 
-  newAthlete = {
+  newAthlete: Athlete = {
     first_name: '',
     last_name: '',
     class_year: 'freshman',

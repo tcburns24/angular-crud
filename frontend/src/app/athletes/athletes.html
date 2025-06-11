@@ -1,1 +1,65 @@
-<p>athletes works!</p>
+<h2>Athletes</h2>
+
+<button (click)="openModal()">Add New Athlete</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Class Year</th>
+      <th>Gender</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let athlete of athletes">
+      <td>{{ athlete.athlete_id }}</td>
+      <td>{{ athlete.first_name }} {{ athlete.last_name }}</td>
+      <td>{{ athlete.class_year }}</td>
+      <td>{{ athlete.gender }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="modal">
+  <div class="modal-content">
+    <h3>Add New Athlete</h3>
+    <form (ngSubmit)="addAthlete()">
+      <label
+        >First Name:
+        <input
+          [(ngModel)]="newAthlete.first_name"
+          name="firstName"
+          required
+        /> </label
+      ><br />
+      <label
+        >Last Name:
+        <input
+          [(ngModel)]="newAthlete.last_name"
+          name="lastName"
+          required
+        /> </label
+      ><br />
+      <label
+        >Class Year:
+        <select [(ngModel)]="newAthlete.class_year" name="classYear">
+          <option value="freshman">Freshman</option>
+          <option value="sophomore">Sophomore</option>
+          <option value="junior">Junior</option>
+          <option value="senior">Senior</option>
+        </select> </label
+      ><br />
+      <label
+        >Gender:
+        <select [(ngModel)]="newAthlete.gender" name="gender">
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+        </select> </label
+      ><br />
+      <button type="submit">Add Athlete</button>
+      <button type="button" (click)="closeModal()">Cancel</button>
+    </form>
+  </div>
+</div>
