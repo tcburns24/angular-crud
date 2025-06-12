@@ -15,10 +15,8 @@ import { HttpClientModule } from '@angular/common/http';
     AthletesWithSportsComponent,
     TeamsComponent,
   ],
-  template: `
-    <app-athletes></app-athletes>
-    <app-athletes-with-sports></app-athletes-with-sports>
-    <app-teams></app-teams>
-  `,
+  template: ` <app-athletes></app-athletes> `,
+  // <app-athletes-with-sports></app-athletes-with-sports>
+  // <app-teams></app-teams>
 })
 export class App {}

@@ -27,9 +27,9 @@ import { AthleteService } from '../services/athlete.services';
   `,
 })
 export class AthletesWithSportsComponent implements OnInit {
-  athletesWithSports: any[] = [];
-
   constructor(private athleteService: AthleteService) {}
+
+  athletesWithSports: any[] = [];
 
   ngOnInit() {
     this.athleteService.getAthletesWithSports().subscribe((data) => {

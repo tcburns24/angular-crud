@@ -126,6 +126,8 @@ app.get("/api/athletes-with-sports", (req, res) => {
       a.athlete_id,
       a.first_name,
       a.last_name,
+      a.class_year,
+      a.gender,
       -- subqueries or left joins for each season:
       (SELECT s.sport_name
       FROM athlete_teams at

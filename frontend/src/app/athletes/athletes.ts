@@ -15,7 +15,6 @@ export class Athletes implements OnInit {
   athletesWithSports: any[] = [];
   showModal: boolean = false;
   isEditMode: boolean = false;
-
   currentEditId: number | null = null;
 
   newAthlete: Athlete = {
@@ -28,11 +27,15 @@ export class Athletes implements OnInit {
   constructor(private athleteService: AthleteService) {}
 
   ngOnInit(): void {
-    this.loadAthletes();
+    this.loadAthletesWithSports();
 
     this.athleteService.athletesWithSports$.subscribe((data) => {
-      this.athletesWithSports = data;
+      this.athletesWithSports = data; // bound to your template
     });
+  }
+
+  loadAthletesWithSports(): void {
+    this.athleteService.getAthletesWithSports().subscribe(); // triggers BehaviorSubject update
   }
 
   loadAthletes(): void {
@@ -43,20 +46,20 @@ export class Athletes implements OnInit {
 
   addAthlete(): void {
     this.athleteService.addAthlete(this.newAthlete).subscribe((data) => {
-      this.loadAthletes();
+      this.loadAthletesWithSports();
       this.closeModal();
     });
   }
 
   updateAthlete(id: number, updatedAthlete: Athlete): void {
     this.athleteService.updateAthlete(id, updatedAthlete).subscribe(() => {
-      this.loadAthletes();
+      this.loadAthletesWithSports();
     });
   }
 
   deleteAthlete(id: number): void {
     this.athleteService.deleteAthlete(id).subscribe(() => {
-      this.loadAthletes();
+      this.loadAthletesWithSports();
     });
   }
 
