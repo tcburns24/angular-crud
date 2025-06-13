@@ -25,7 +25,21 @@ db.connect((err) => {
 
 // Endpoint: GET athletes
 app.get("/api/athletes", (req, res) => {
-  const sql = "select * from athletes";
+  const sql = `
+    SELECT 
+      a.athlete_id,
+      a.first_name,
+      a.last_name,
+      a.class_year,
+      a.gender,
+      sf.name AS fall_sport,
+      sw.name AS winter_sport,
+      ss.name AS spring_sport
+    FROM athletes a
+    LEFT JOIN sports sf ON a.fall_sport_id = sf.sport_id
+    LEFT JOIN sports sw ON a.winter_sport_id = sw.sport_id
+    LEFT JOIN sports ss ON a.spring_sport_id = ss.sport_id;
+  `;
   db.query(sql, (err, result) => {
     if (err) {
       console.error("🚨 error on GET /athletes", err);
@@ -37,14 +51,30 @@ app.get("/api/athletes", (req, res) => {
 
 // Endpoint: POST a new athlete
 app.post("/api/athletes", (req, res) => {
-  const { first_name, last_name, class_year, gender } = req.body;
+  const {
+    first_name,
+    last_name,
+    class_year,
+    gender,
+    fall_sport,
+    winter_sport,
+    spring_sport,
+  } = req.body;
 
   if (!first_name || !last_name || !class_year || !gender) {
     return res.status(400).send("Missing athlete request body field(s)");
   }
 
-  const sql = `insert into athletes (first_name, last_name, class_year, gender) values (?, ?, ?, ?)`;
-  const values = [first_name, last_name, class_year, gender];
+  const sql = `insert into athletes (first_name, last_name, class_year, gender, fall_sport, winter_sport, spring_sport) values (?, ?, ?, ?, ?, ?, ?)`;
+  const values = [
+    first_name,
+    last_name,
+    class_year,
+    gender,
+    fall_sport,
+    winter_sport,
+    spring_sport,
+  ];
 
   db.query(sql, values, (err, result) => {
     if (err) {
@@ -61,47 +91,42 @@ app.post("/api/athletes", (req, res) => {
 // Endpoint: PUT an existing athlete
 app.put("/api/athletes/:id", (req, res) => {
   const id = req.params.id;
-  const { first_name, last_name, class_year, gender } = req.body;
+  const {
+    first_name,
+    last_name,
+    class_year,
+    gender,
+    fall_sport,
+    winter_sport,
+    spring_sport,
+  } = req.body;
 
   const sql = `update athletes set
                 first_name = ?,
                 last_name = ?,
                 class_year = ?,
-                gender = ?
+                gender = ?,
+                fall_sport = ?, 
+                winter_sport = ?, 
+                spring_sport = ?
               where athlete_id = ?`;
-  const values = [first_name, last_name, class_year, gender, id];
+  const values = [
+    first_name,
+    last_name,
+    class_year,
+    gender,
+    fall_sport,
+    winter_sport,
+    spring_sport,
+    id,
+  ];
 
   db.query(sql, values, (err, result) => {
     if (err) {
-      console.error("🚨 error on PUT /athletes/:id", err);
+      console.error("🚨 error on PUT /athletes/:id", err.sqlMessage);
       return res.status(500).send("db error");
     }
     res.send({ message: "Athlete successfully updated ✅" });
-  });
-});
-
-// Endpoint: PATCH a field of an existing athlete
-app.patch("/api/athletes/:id", (req, res) => {
-  const id = req.params.id;
-  const fields = req.body;
-
-  if (Object.keys(fields).length === 0) {
-    return res.status(400).send("No fields to update.");
-  }
-
-  const setClause = Object.keys(fields)
-    .map((field) => `${field} = ?`)
-    .join(", ");
-  const values = [...Object.values(fields), id];
-
-  const sql = `UPDATE athletes SET ${setClause} WHERE athlete_id = ?`;
-
-  db.query(sql, values, (err, result) => {
-    if (err) {
-      console.error("Error partially updating athlete:", err);
-      return res.status(500).send("DB error");
-    }
-    res.send({ message: "Athlete partially updated ✅" });
   });
 });
 
@@ -128,6 +153,9 @@ app.get("/api/athletes-with-sports", (req, res) => {
       a.last_name,
       a.class_year,
       a.gender,
+      a.fall_sport,
+      a.winter_sport,
+      a.spring_sport,
       -- subqueries or left joins for each season:
       (SELECT s.sport_name
       FROM athlete_teams at
@@ -158,62 +186,16 @@ app.get("/api/athletes-with-sports", (req, res) => {
   });
 });
 
-// ===================== 2) TEAMS Endpoints =====================
-
-// Endpoint: GET all teams
-app.get("/api/teams", (req, res) => {
-  const sql = "select * from teams";
-  db.query(sql, (err, result) => {
-    if (err) return res.status(500).send("Error fetching teams");
-    res.json(result);
-  });
-});
-
-// Endpoint: POST a new team
-app.post("/api/teams/", (req, res) => {
-  const { sport_id, level, gender, season, coach_name } = req.body;
-  const sql =
-    "insert into teams (sport_id, level, gender, season, coach_name) values (?, ?, ?, ?, ?)";
-  const values = [sport_id, level, gender, season, coach_name];
-
-  db.query(sql, values, (err, result) => {
-    if (err) return res.status(500).send("Error POSTing team");
-    res.json({ message: "Team added", teamId: result.insertId });
-  });
-});
-
-// Endpoint: Update a team
-app.put("/api/teams/:id", (req, res) => {
-  const id = req.params.id;
-  const { sport_id, level, gender, season, coach_name } = req.body;
-  const sql = `
-    UPDATE teams SET sport_id = ?, level = ?, gender = ?, season = ?, coach_name = ? 
-    WHERE team_id = ?
-  `;
-  const values = [sport_id, level, gender, season, coach_name, id];
-
-  db.query(sql, values, (err, result) => {
-    if (err) return res.status(500).send("Error updating team");
-    res.json({ message: "Team updated" });
-  });
-});
-
-// Endpoint: DELETE a team
-app.delete("/api/teams/:id", (req, res) => {
-  const id = req.params.id;
-  const sql = "DELETE FROM teams WHERE team_id = ?";
-  db.query(sql, [id], (err, result) => {
-    if (err) return res.status(500).send("Error deleting team");
-    res.json({ message: "Team deleted" });
-  });
-});
-
-// ===================== 3) SPORTS Endpoints =====================
+// ===================== 2) SPORTS Endpoints =====================
 // GET all sports
 app.get("/api/sports", (req, res) => {
-  db.query("SELECT * FROM sports", (err, result) => {
-    if (err) return res.status(500).send("Error fetching sports");
-    res.json(result);
+  const sql = `SELECT * FROM sports`;
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching sports", err);
+      return res.status(500).send("DB Error");
+    }
+    res.json(results);
   });
 });
 
@@ -247,92 +229,6 @@ app.delete("/api/sports/:id", (req, res) => {
     if (err) return res.status(500).send("Error deleting sport");
     res.json({ message: "Sport deleted" });
   });
-});
-
-// ===================== 4) ATHLETE_TEAMS Endpoints =====================
-// GET all athlete_team relationships
-app.get("/api/athlete_teams", (req, res) => {
-  db.query("SELECT * FROM athlete_teams", (err, result) => {
-    if (err) return res.status(500).send("Error fetching athlete_teams");
-    res.json(result);
-  });
-});
-
-// POST a new relationship
-app.post("/api/athlete_teams", (req, res) => {
-  const {
-    athlete_id,
-    team_id,
-    jersey_number,
-    position,
-    is_captain,
-    notes,
-  } = req.body;
-  const sql = `
-    INSERT INTO athlete_teams (athlete_id, team_id, jersey_number, position, is_captain, notes)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `;
-  const values = [
-    athlete_id,
-    team_id,
-    jersey_number,
-    position,
-    is_captain,
-    notes,
-  ];
-
-  db.query(sql, values, (err, result) => {
-    if (err) return res.status(500).send("Error adding athlete_team");
-    res.json({
-      message: "Athlete-Team relationship added",
-      id: result.insertId,
-    });
-  });
-});
-
-// PUT to update a relationship
-app.put("/api/athlete_teams/:id", (req, res) => {
-  const id = req.params.id;
-  const {
-    athlete_id,
-    team_id,
-    jersey_number,
-    position,
-    is_captain,
-    notes,
-  } = req.body;
-  const sql = `
-    UPDATE athlete_teams SET 
-      athlete_id=?, team_id=?, jersey_number=?, position=?, is_captain=?, notes=?
-    WHERE athlete_team_id=?
-  `;
-  const values = [
-    athlete_id,
-    team_id,
-    jersey_number,
-    position,
-    is_captain,
-    notes,
-    id,
-  ];
-
-  db.query(sql, values, (err) => {
-    if (err) return res.status(500).send("Error updating athlete_team");
-    res.json({ message: "Athlete-Team relationship updated" });
-  });
-});
-
-// DELETE a relationship
-app.delete("/api/athlete_teams/:id", (req, res) => {
-  const id = req.params.id;
-  db.query(
-    "DELETE FROM athlete_teams WHERE athlete_team_id = ?",
-    [id],
-    (err) => {
-      if (err) return res.status(500).send("Error deleting athlete_team");
-      res.json({ message: "Athlete-Team relationship deleted" });
-    }
-  );
 });
 
 // ===============================================================

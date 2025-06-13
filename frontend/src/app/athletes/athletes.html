@@ -17,7 +17,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let athlete of athletesWithSports">
+    <tr *ngFor="let athlete of athletes">
       <td>{{ athlete.athlete_id }}</td>
       <td>{{ athlete.first_name }} {{ athlete.last_name }}</td>
       <td>{{ athlete.class_year }}</td>
@@ -31,7 +31,7 @@
   </tbody>
 </table>
 
-<!-- Modal -->
+<!-- Add/Edit Modal -->
 <div *ngIf="showModal" class="modal">
   <div class="modal-content">
     <h3>{{ isEditMode ? 'Edit' : 'Add New' }} Athlete</h3>
@@ -63,11 +63,45 @@
       ><br />
       <label
         >Gender:
-        <select [(ngModel)]="newAthlete.gender" name="gender">
-          <option value="M">Male</option>
-          <option value="F">Female</option>
+        <select [(ngModel)]="selectedGender" name="gender">
+          <option value="M">M</option>
+          <option value="F">F</option>
         </select> </label
       ><br />
+      <label>
+        Fall Sport:
+        <select [(ngModel)]="newAthlete.fall_sport_id" name="fall_sport">
+          <option [ngValue]="null">--</option>
+          <option
+            *ngFor="let sport of sports[selectedGender]['Fall']"
+            [ngValue]="sport.sport_id"
+          >
+            {{ sport.name }}
+          </option>
+        </select>
+      </label>
+      <label>
+        Winter Sport:
+        <select [(ngModel)]="newAthlete.winter_sport_id" name="winter_sport">
+          <option
+            *ngFor="let sport of sports[selectedGender]['Winter']"
+            [ngValue]="sport.sport_id"
+          >
+            {{ sport.name }}
+          </option>
+        </select>
+      </label>
+      <label>
+        Spring Sport:
+        <select [(ngModel)]="newAthlete.spring_sport_id" name="spring_sport">
+          <option
+            *ngFor="let sport of sports[selectedGender]['Spring']"
+            [ngValue]="sport.sport_id"
+          >
+            {{ sport.name }}
+          </option>
+        </select>
+      </label>
       <button type="submit">{{ isEditMode ? 'Update' : 'Submit' }}</button>
       <button type="button" (click)="closeModal()">Cancel</button>
     </form>

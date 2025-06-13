@@ -7,8 +7,11 @@ export interface Athlete {
   athlete_id?: number;
   first_name: string;
   last_name: string;
-  class_year: 'freshman' | 'sophomore' | 'junior' | 'senior';
-  gender: 'M' | 'F';
+  class_year: string;
+  gender: string;
+  fall_sport_id?: number | null;
+  winter_sport_id?: number | null;
+  spring_sport_id?: number | null;
 }
 
 @Injectable({

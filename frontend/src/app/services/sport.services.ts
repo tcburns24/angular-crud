@@ -2,6 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface Sport {
+  sport_id: number;
+  name: string;
+  gender: string;
+  season: string;
+  academic_year: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
