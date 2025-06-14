@@ -1,6 +1,7 @@
 <h2>Athletes</h2>
 
 <button (click)="openAddAthleteModal()">Add New Athlete</button>
+<button (click)="showFilterModal = true">Filter Athletes</button>
 
 <table>
   <thead>
@@ -95,6 +96,7 @@
       <label>
         Spring Sport:
         <select [(ngModel)]="newAthlete.spring_sport_id" name="spring_sport">
+          <option [ngValue]="null">--</option>
           <option
             *ngFor="let sport of sports[selectedGender]['Spring']"
             [ngValue]="sport.sport_id"
@@ -107,4 +109,42 @@
       <button type="button" (click)="closeModal()">Cancel</button>
     </form>
   </div>
+</div>
+
+<!-- Filter modal -->
+<div *ngIf="showFilterModal" class="modal">
+  <h3>Filter Athletes</h3>
+
+  <label>
+    Gender:
+    <select [(ngModel)]="filterCriteria.gender">
+      <option value="">All</option>
+      <option value="M">Male</option>
+      <option value="F">Female</option>
+    </select>
+  </label>
+
+  <label>
+    Team (Sport):
+    <select [(ngModel)]="filterCriteria.team">
+      <option [ngValue]="null">All</option>
+      <option *ngFor="let sport of allSports" [ngValue]="sport.sport_id">
+        {{ sport.name }}
+      </option>
+    </select>
+  </label>
+
+  <label>
+    Class Year:
+    <select [(ngModel)]="filterCriteria.classYear">
+      <option value="">All</option>
+      <option value="freshman">Freshman</option>
+      <option value="sophomore">Sophomore</option>
+      <option value="junior">Junior</option>
+      <option value="senior">Senior</option>
+    </select>
+  </label>
+
+  <button (click)="applyFilter()">Apply Filter</button>
+  <button (click)="clearFilter()">Clear</button>
 </div>

@@ -14,6 +14,7 @@ import { SportService, Sport } from '../services/sport.services';
 export class Athletes implements OnInit {
   athletes: any[] = [];
   showModal: boolean = false;
+  showFilterModal: boolean = false;
   isEditMode: boolean = false;
   currentEditId: number | null = null;
   selectedGender: string = 'M';
@@ -29,6 +30,12 @@ export class Athletes implements OnInit {
       Winter: [],
       Spring: [],
     },
+  };
+
+  filterCriteria = {
+    gender: '', // 'M' | 'F' | ''
+    team: null as number | null, // sport_id
+    classYear: '', // 'freshman' | 'sophomore' | 'junior' | 'senior' | ''
   };
 
   newAthlete: Athlete = {
@@ -105,6 +112,37 @@ export class Athletes implements OnInit {
     this.athleteService.deleteAthlete(id).subscribe(() => {
       this.loadAthletes();
     });
+  }
+
+  applyFilter() {
+    this.athletes = this.athletes.filter((athlete) => {
+      const genderMatch = this.filterCriteria.gender
+        ? athlete.gender === this.filterCriteria.gender
+        : true;
+
+      const classYearMatch = this.filterCriteria.classYear
+        ? athlete.class_year === this.filterCriteria.classYear
+        : true;
+
+      const teamMatch = this.filterCriteria.team
+        ? athlete.fall_sport_id === this.filterCriteria.team ||
+          athlete.winter_sport_id === this.filterCriteria.team ||
+          athlete.spring_sport_id === this.filterCriteria.team
+        : true;
+
+      return genderMatch && classYearMatch && teamMatch;
+    });
+
+    this.showFilterModal = false; // close modal after filter
+  }
+
+  clearFilter() {
+    this.filterCriteria = {
+      gender: '',
+      team: null,
+      classYear: '',
+    };
+    this.athletes = [...this.athletes]; // reset table
   }
 
   openAddAthleteModal(): void {
