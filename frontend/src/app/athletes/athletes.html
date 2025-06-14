@@ -77,7 +77,7 @@
             *ngFor="let sport of sports[selectedGender]['Fall']"
             [ngValue]="sport.sport_id"
           >
-            {{ sport.name }}
+            {{ sport.name + ' | ' + sport.gender }}
           </option>
         </select>
       </label>
@@ -89,7 +89,7 @@
             *ngFor="let sport of sports[selectedGender]['Winter']"
             [ngValue]="sport.sport_id"
           >
-            {{ sport.name }}
+            {{ sport.name + ' | ' + sport.gender }}
           </option>
         </select>
       </label>
@@ -101,7 +101,7 @@
             *ngFor="let sport of sports[selectedGender]['Spring']"
             [ngValue]="sport.sport_id"
           >
-            {{ sport.name }}
+            {{ sport.name + ' | ' + sport.gender }}
           </option>
         </select>
       </label>
