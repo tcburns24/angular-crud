@@ -17,6 +17,7 @@ export class Athletes implements OnInit {
   isEditMode: boolean = false;
   currentEditId: number | null = null;
   selectedGender: string = 'M';
+  allSports: Sport[] = [];
   sports: Record<string, Record<string, Sport[]>> = {
     M: {
       Fall: [],
@@ -52,7 +53,7 @@ export class Athletes implements OnInit {
 
   loadAllSports(): void {
     this.sportService.getSports().subscribe((allSports: Sport[]) => {
-      console.log('⚾ allsports = ', allSports);
+      this.allSports = allSports;
       this.sports['M']['Fall'] = allSports.filter(
         (sport) => sport.gender === 'M' && sport.season === 'Fall'
       );
@@ -78,6 +79,12 @@ export class Athletes implements OnInit {
     this.athleteService.getAthletes().subscribe((data: Athlete[]) => {
       this.athletes = data;
     });
+  }
+
+  getSportNameById(sportId: number | null): string {
+    if (!sportId) return '--';
+    const sport = this.allSports.find((s: Sport) => s.sport_id === sportId);
+    return sport ? sport.name : '--';
   }
 
   addAthlete(): void {
@@ -115,8 +122,18 @@ export class Athletes implements OnInit {
   }
 
   openEditAthleteModal(athlete: Athlete): void {
+    console.log('🌞 athlete = ', athlete);
     this.isEditMode = true;
-    this.newAthlete = { ...athlete };
+    this.newAthlete = {
+      athlete_id: athlete.athlete_id,
+      first_name: athlete.first_name,
+      last_name: athlete.last_name,
+      class_year: athlete.class_year,
+      gender: athlete.gender,
+      fall_sport_id: athlete.fall_sport_id, // map correctly here
+      winter_sport_id: athlete.winter_sport_id,
+      spring_sport_id: athlete.spring_sport_id,
+    };
     this.currentEditId = athlete.athlete_id!;
     this.showModal = true;
   }

@@ -32,9 +32,9 @@ app.get("/api/athletes", (req, res) => {
       a.last_name,
       a.class_year,
       a.gender,
-      sf.name AS fall_sport,
-      sw.name AS winter_sport,
-      ss.name AS spring_sport
+      sf.sport_id AS fall_sport_id,
+      sw.sport_id AS winter_sport_id,
+      ss.sport_id AS spring_sport_id
     FROM athletes a
     LEFT JOIN sports sf ON a.fall_sport_id = sf.sport_id
     LEFT JOIN sports sw ON a.winter_sport_id = sw.sport_id
@@ -56,30 +56,31 @@ app.post("/api/athletes", (req, res) => {
     last_name,
     class_year,
     gender,
-    fall_sport,
-    winter_sport,
-    spring_sport,
+    fall_sport_id,
+    winter_sport_id,
+    spring_sport_id,
   } = req.body;
 
   if (!first_name || !last_name || !class_year || !gender) {
     return res.status(400).send("Missing athlete request body field(s)");
   }
 
-  const sql = `insert into athletes (first_name, last_name, class_year, gender, fall_sport, winter_sport, spring_sport) values (?, ?, ?, ?, ?, ?, ?)`;
+  const sql = `insert into athletes (first_name, last_name, class_year, gender, fall_sport_id,
+    winter_sport_id, spring_sport_id) values (?, ?, ?, ?, ?, ?, ?)`;
   const values = [
     first_name,
     last_name,
     class_year,
     gender,
-    fall_sport,
-    winter_sport,
-    spring_sport,
+    fall_sport_id,
+    winter_sport_id,
+    spring_sport_id,
   ];
 
   db.query(sql, values, (err, result) => {
     if (err) {
-      console.error("🚨 error on POST /athletes", err);
-      return res.status(500).send("db error");
+      console.error("🚨 POST /athletes error:", err.sqlMessage);
+      return res.status(500).send(err.sqlMessage);
     }
     res.status(201).send({
       message: "✅ Athlete successfully POSTed",
@@ -96,9 +97,9 @@ app.put("/api/athletes/:id", (req, res) => {
     last_name,
     class_year,
     gender,
-    fall_sport,
-    winter_sport,
-    spring_sport,
+    fall_sport_id,
+    winter_sport_id,
+    spring_sport_id,
   } = req.body;
 
   const sql = `update athletes set
@@ -106,18 +107,18 @@ app.put("/api/athletes/:id", (req, res) => {
                 last_name = ?,
                 class_year = ?,
                 gender = ?,
-                fall_sport = ?, 
-                winter_sport = ?, 
-                spring_sport = ?
+                fall_sport_id = ?, 
+                winter_sport_id = ?, 
+                spring_sport_id = ?
               where athlete_id = ?`;
   const values = [
     first_name,
     last_name,
     class_year,
     gender,
-    fall_sport,
-    winter_sport,
-    spring_sport,
+    fall_sport_id,
+    winter_sport_id,
+    spring_sport_id,
     id,
   ];
 

@@ -22,9 +22,9 @@
       <td>{{ athlete.first_name }} {{ athlete.last_name }}</td>
       <td>{{ athlete.class_year }}</td>
       <td>{{ athlete.gender }}</td>
-      <td>{{ athlete.fall_sport || '--' }}</td>
-      <td>{{ athlete.winter_sport || '--' }}</td>
-      <td>{{ athlete.spring_sport || '--' }}</td>
+      <td>{{ getSportNameById(athlete.fall_sport_id) || '--' }}</td>
+      <td>{{ getSportNameById(athlete.winter_sport_id) || '--' }}</td>
+      <td>{{ getSportNameById(athlete.spring_sport_id) || '--' }}</td>
       <td><button (click)="openEditAthleteModal(athlete)">✏️</button></td>
       <td><button (click)="deleteAthlete(athlete.athlete_id)">🗑️</button></td>
     </tr>
@@ -83,6 +83,7 @@
       <label>
         Winter Sport:
         <select [(ngModel)]="newAthlete.winter_sport_id" name="winter_sport">
+          <option [ngValue]="null">--</option>
           <option
             *ngFor="let sport of sports[selectedGender]['Winter']"
             [ngValue]="sport.sport_id"
