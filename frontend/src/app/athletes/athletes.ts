@@ -12,7 +12,8 @@ import { SportService, Sport } from '../services/sport.services';
   styleUrls: ['./athletes.scss'],
 })
 export class Athletes implements OnInit {
-  athletes: any[] = [];
+  athletes: Athlete[] = [];
+  allAthletes: Athlete[] = [];
   showModal: boolean = false;
   showFilterModal: boolean = false;
   isEditMode: boolean = false;
@@ -33,12 +34,13 @@ export class Athletes implements OnInit {
   };
 
   filterCriteria = {
-    gender: '', // 'M' | 'F' | ''
-    team: null as number | null, // sport_id
-    classYear: '', // 'freshman' | 'sophomore' | 'junior' | 'senior' | ''
+    gender: '',
+    team: null as number | null,
+    classYear: '',
   };
 
   newAthlete: Athlete = {
+    athlete_id: 0,
     first_name: '',
     last_name: '',
     class_year: 'freshman',
@@ -84,7 +86,8 @@ export class Athletes implements OnInit {
 
   loadAthletes(): void {
     this.athleteService.getAthletes().subscribe((data: Athlete[]) => {
-      this.athletes = data;
+      this.allAthletes = data;
+      this.athletes = [...data];
     });
   }
 
@@ -115,39 +118,45 @@ export class Athletes implements OnInit {
   }
 
   applyFilter() {
-    this.athletes = this.athletes.filter((athlete) => {
-      const genderMatch = this.filterCriteria.gender
-        ? athlete.gender === this.filterCriteria.gender
-        : true;
+    const { gender, classYear, team } = this.filterCriteria;
 
-      const classYearMatch = this.filterCriteria.classYear
-        ? athlete.class_year === this.filterCriteria.classYear
-        : true;
+    // If no filters are set, show 'em all:
+    if (!gender && !classYear && !team) {
+      this.athletes = [...this.allAthletes];
+      this.showFilterModal = false;
+      return;
+    }
 
-      const teamMatch = this.filterCriteria.team
-        ? athlete.fall_sport_id === this.filterCriteria.team ||
-          athlete.winter_sport_id === this.filterCriteria.team ||
-          athlete.spring_sport_id === this.filterCriteria.team
+    this.athletes = this.allAthletes.filter((athlete) => {
+      const genderMatch = gender ? athlete.gender === gender : true;
+      const classYearMatch = classYear
+        ? athlete.class_year === classYear
+        : true;
+      const teamMatch = team
+        ? athlete.fall_sport_id === team ||
+          athlete.winter_sport_id === team ||
+          athlete.spring_sport_id === team
         : true;
 
       return genderMatch && classYearMatch && teamMatch;
     });
 
-    this.showFilterModal = false; // close modal after filter
+    this.showFilterModal = false;
   }
 
   clearFilter() {
     this.filterCriteria = {
       gender: '',
-      team: null,
       classYear: '',
+      team: null,
     };
-    this.athletes = [...this.athletes]; // reset table
+    this.athletes = [...this.allAthletes]; // reset table
   }
 
   openAddAthleteModal(): void {
     this.isEditMode = false;
     this.newAthlete = {
+      athlete_id: 0,
       first_name: '',
       last_name: '',
       class_year: 'freshman',

@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 export interface Athlete {
-  athlete_id?: number;
+  athlete_id: number;
   first_name: string;
   last_name: string;
   class_year: string;

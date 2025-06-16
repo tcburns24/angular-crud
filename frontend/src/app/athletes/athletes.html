@@ -23,9 +23,9 @@
       <td>{{ athlete.first_name }} {{ athlete.last_name }}</td>
       <td>{{ athlete.class_year }}</td>
       <td>{{ athlete.gender }}</td>
-      <td>{{ getSportNameById(athlete.fall_sport_id) || '--' }}</td>
-      <td>{{ getSportNameById(athlete.winter_sport_id) || '--' }}</td>
-      <td>{{ getSportNameById(athlete.spring_sport_id) || '--' }}</td>
+      <td>{{ getSportNameById(athlete.fall_sport_id ?? null) || '--' }}</td>
+      <td>{{ getSportNameById(athlete.winter_sport_id ?? null) || '--' }}</td>
+      <td>{{ getSportNameById(athlete.spring_sport_id ?? null) || '--' }}</td>
       <td><button (click)="openEditAthleteModal(athlete)">✏️</button></td>
       <td><button (click)="deleteAthlete(athlete.athlete_id)">🗑️</button></td>
     </tr>
