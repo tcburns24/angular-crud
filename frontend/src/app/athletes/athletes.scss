@@ -1,16 +1,115 @@
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+body {
+  background-color: #1e1e1e; /* dark grey */
+  color: #ffffff; /* white text */
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 20px;
 }
-.modal-content {
-  background: white;
+
+.button-row {
+  padding: 2em 0 0;
+  display: flex;
+  justify-content: space-around;
+  align-self: center;
+}
+.header-button {
+  padding: 18px;
+  border-radius: 10px;
+  border: 2px solid black;
+  color: #2a2a2a;
+}
+
+h1,
+h2,
+h3 {
+  // color: #39ff14; /* neon green */
+  color: black;
+}
+
+table {
+  color: #ffffff;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #2a2a2a; /* slightly lighter dark grey for table bg */
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.3); /* soft neon glow */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th,
+td {
+  padding: 16px 20px; /* spacious */
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+th {
+  background-color: #333333;
+  color: #39ff14; /* neon green headers */
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+td {
+  font-size: 15px;
+}
+
+tr:hover {
+  background-color: #3a3a3a; /* hover effect */
+}
+
+button {
+  background-color: transparent;
+  border: 1px solid #39ff14;
+  color: #39ff14;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+button:hover {
+  background-color: #39ff14;
+  color: #1e1e1e;
+}
+
+label {
+  display: block;
+  margin: 12px 0 4px;
+  color: #39ff14;
+  font-weight: 500;
+}
+
+select,
+input[type="text"] {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #39ff14;
+  border-radius: 4px;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+select:focus,
+input[type="text"]:focus {
+  outline: none;
+  box-shadow: 0 0 5px #39ff14;
+}
+
+.modal {
+  background-color: #2a2a2a;
+  border: 1px solid #39ff14;
   padding: 20px;
   border-radius: 8px;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+}
+
+.filter-modal {
+  margin-top: 20px;
+}
+
+.footer {
+  padding: 8px;
 }

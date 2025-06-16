@@ -1,7 +1,14 @@
-<h2>Athletes</h2>
+<h2>Athletic Director Management System</h2>
+<div>A basic CRUD app for managing student-athletes.</div>
 
-<button (click)="openAddAthleteModal()">Add New Athlete</button>
-<button (click)="showFilterModal = true">Filter Athletes</button>
+<div class="button-row">
+  <button class="header-button" (click)="openAddAthleteModal()">
+    Add New Athlete
+  </button>
+  <button class="header-button" (click)="showFilterModal = true">
+    Filter Athletes
+  </button>
+</div>
 
 <table>
   <thead>
@@ -147,4 +154,8 @@
 
   <button (click)="applyFilter()">Apply Filter</button>
   <button (click)="clearFilter()">Clear</button>
+</div>
+<div class="footer">
+  <div>2025</div>
+  <div>github.com/tcburns24/</div>
 </div>
