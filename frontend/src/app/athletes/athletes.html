@@ -40,121 +40,144 @@
 </table>
 
 <!-- Add/Edit Modal -->
-<div *ngIf="showModal" class="modal">
-  <div class="modal-content">
-    <h3>{{ isEditMode ? 'Edit' : 'Add New' }} Athlete</h3>
-    <form (ngSubmit)="submitForm()">
-      <label
-        >First Name:
-        <input
-          [(ngModel)]="newAthlete.first_name"
-          name="firstName"
-          required
-        /> </label
-      ><br />
-      <label
-        >Last Name:
-        <input
-          [(ngModel)]="newAthlete.last_name"
-          name="lastName"
-          required
-        /> </label
-      ><br />
-      <label
-        >Class Year:
-        <select [(ngModel)]="newAthlete.class_year" name="classYear">
-          <option value="freshman">Freshman</option>
-          <option value="sophomore">Sophomore</option>
-          <option value="junior">Junior</option>
-          <option value="senior">Senior</option>
-        </select> </label
-      ><br />
-      <label
-        >Gender:
-        <select [(ngModel)]="selectedGender" name="gender">
-          <option value="M">M</option>
-          <option value="F">F</option>
-        </select> </label
-      ><br />
-      <label>
-        Fall Sport:
-        <select [(ngModel)]="newAthlete.fall_sport_id" name="fall_sport">
-          <option [ngValue]="null">--</option>
-          <option
-            *ngFor="let sport of sports[selectedGender]['Fall']"
-            [ngValue]="sport.sport_id"
-          >
-            {{ sport.name + ' | ' + sport.gender }}
-          </option>
-        </select>
-      </label>
-      <label>
-        Winter Sport:
-        <select [(ngModel)]="newAthlete.winter_sport_id" name="winter_sport">
-          <option [ngValue]="null">--</option>
-          <option
-            *ngFor="let sport of sports[selectedGender]['Winter']"
-            [ngValue]="sport.sport_id"
-          >
-            {{ sport.name + ' | ' + sport.gender }}
-          </option>
-        </select>
-      </label>
-      <label>
-        Spring Sport:
-        <select [(ngModel)]="newAthlete.spring_sport_id" name="spring_sport">
-          <option [ngValue]="null">--</option>
-          <option
-            *ngFor="let sport of sports[selectedGender]['Spring']"
-            [ngValue]="sport.sport_id"
-          >
-            {{ sport.name + ' | ' + sport.gender }}
-          </option>
-        </select>
-      </label>
-      <button type="submit">{{ isEditMode ? 'Update' : 'Submit' }}</button>
-      <button type="button" (click)="closeModal()">Cancel</button>
-    </form>
+<div *ngIf="showModal" class="modal-overlay" [class.show]="showModal">
+  <div class="modal">
+    <button class="modal-close" (click)="closeModal()">&times;</button>
+    <div class="modal-content">
+      <h3>{{ isEditMode ? 'Edit' : 'Add New' }} Athlete</h3>
+      <form (ngSubmit)="submitForm()">
+        <label>
+          First Name:
+          <input
+            [(ngModel)]="newAthlete.first_name"
+            name="firstName"
+            required
+          />
+        </label>
+
+        <label>
+          Last Name:
+          <input [(ngModel)]="newAthlete.last_name" name="lastName" required />
+        </label>
+
+        <label>
+          Class Year:
+          <select [(ngModel)]="newAthlete.class_year" name="classYear">
+            <option value="freshman">Freshman</option>
+            <option value="sophomore">Sophomore</option>
+            <option value="junior">Junior</option>
+            <option value="senior">Senior</option>
+          </select>
+        </label>
+
+        <label>
+          Gender:
+          <select [(ngModel)]="selectedGender" name="gender">
+            <option value="M">M</option>
+            <option value="F">F</option>
+          </select>
+        </label>
+
+        <label>
+          Fall Sport:
+          <select [(ngModel)]="newAthlete.fall_sport_id" name="fall_sport">
+            <option [ngValue]="null">--</option>
+            <option
+              *ngFor="let sport of sports[selectedGender]['Fall']"
+              [ngValue]="sport.sport_id"
+            >
+              {{ sport.name + ' | ' + sport.gender }}
+            </option>
+          </select>
+        </label>
+
+        <label>
+          Winter Sport:
+          <select [(ngModel)]="newAthlete.winter_sport_id" name="winter_sport">
+            <option [ngValue]="null">--</option>
+            <option
+              *ngFor="let sport of sports[selectedGender]['Winter']"
+              [ngValue]="sport.sport_id"
+            >
+              {{ sport.name + ' | ' + sport.gender }}
+            </option>
+          </select>
+        </label>
+
+        <label>
+          Spring Sport:
+          <select [(ngModel)]="newAthlete.spring_sport_id" name="spring_sport">
+            <option [ngValue]="null">--</option>
+            <option
+              *ngFor="let sport of sports[selectedGender]['Spring']"
+              [ngValue]="sport.sport_id"
+            >
+              {{ sport.name + ' | ' + sport.gender }}
+            </option>
+          </select>
+        </label>
+
+        <div class="button-group">
+          <button type="button" (click)="closeModal()">Cancel</button>
+          <button type="submit">{{ isEditMode ? 'Update' : 'Submit' }}</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
-<!-- Filter modal -->
-<div *ngIf="showFilterModal" class="modal">
-  <h3>Filter Athletes</h3>
+<!-- Filter Modal -->
+<div
+  *ngIf="showFilterModal"
+  class="modal-overlay"
+  [class.show]="showFilterModal"
+>
+  <div class="modal filter-modal">
+    <button class="modal-close" (click)="showFilterModal = false">
+      &times;
+    </button>
+    <div class="modal-content">
+      <h3>Filter Athletes</h3>
+      <form (ngSubmit)="applyFilter()">
+        <label>
+          Gender:
+          <select [(ngModel)]="filterCriteria.gender" name="gender">
+            <option value="">All</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+          </select>
+        </label>
 
-  <label>
-    Gender:
-    <select [(ngModel)]="filterCriteria.gender">
-      <option value="">All</option>
-      <option value="M">Male</option>
-      <option value="F">Female</option>
-    </select>
-  </label>
+        <label>
+          Team (Sport):
+          <select [(ngModel)]="filterCriteria.team" name="team">
+            <option [ngValue]="null">All</option>
+            <option *ngFor="let sport of allSports" [ngValue]="sport.sport_id">
+              {{ sport.name + ' | ' + sport.gender }}
+            </option>
+          </select>
+        </label>
 
-  <label>
-    Team (Sport):
-    <select [(ngModel)]="filterCriteria.team">
-      <option [ngValue]="null">All</option>
-      <option *ngFor="let sport of allSports" [ngValue]="sport.sport_id">
-        {{ sport.name }}
-      </option>
-    </select>
-  </label>
+        <label>
+          Class Year:
+          <select [(ngModel)]="filterCriteria.classYear" name="classYear">
+            <option value="">All</option>
+            <option value="freshman">Freshman</option>
+            <option value="sophomore">Sophomore</option>
+            <option value="junior">Junior</option>
+            <option value="senior">Senior</option>
+          </select>
+        </label>
 
-  <label>
-    Class Year:
-    <select [(ngModel)]="filterCriteria.classYear">
-      <option value="">All</option>
-      <option value="freshman">Freshman</option>
-      <option value="sophomore">Sophomore</option>
-      <option value="junior">Junior</option>
-      <option value="senior">Senior</option>
-    </select>
-  </label>
-
-  <button (click)="applyFilter()">Apply Filter</button>
-  <button (click)="clearFilter()">Clear</button>
+        <div class="button-group">
+          <button type="button" (click)="clearFilter()">Clear</button>
+          <button type="submit">Apply Filter</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
+
 <div class="footer">
   <div>2025</div>
   <div>github.com/tcburns24/</div>

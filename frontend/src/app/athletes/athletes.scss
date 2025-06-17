@@ -1,6 +1,6 @@
 body {
-  background-color: #1e1e1e; /* dark grey */
-  color: #ffffff; /* white text */
+  background-color: #1e1e1e;
+  color: #ffffff;
   font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 20px;
@@ -12,6 +12,7 @@ body {
   justify-content: space-around;
   align-self: center;
 }
+
 .header-button {
   padding: 18px;
   border-radius: 10px;
@@ -22,7 +23,6 @@ body {
 h1,
 h2,
 h3 {
-  // color: #39ff14; /* neon green */
   color: black;
 }
 
@@ -31,22 +31,22 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  background-color: #2a2a2a; /* slightly lighter dark grey for table bg */
-  box-shadow: 0 0 10px rgba(57, 255, 20, 0.3); /* soft neon glow */
+  background-color: #2a2a2a;
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
   border-radius: 8px;
   overflow: hidden;
 }
 
 th,
 td {
-  padding: 16px 20px; /* spacious */
+  padding: 16px 20px;
   text-align: left;
   border-bottom: 1px solid #333;
 }
 
 th {
   background-color: #333333;
-  color: #39ff14; /* neon green headers */
+  color: #39ff14;
   font-weight: bold;
   text-transform: uppercase;
   font-size: 14px;
@@ -57,7 +57,7 @@ td {
 }
 
 tr:hover {
-  background-color: #3a3a3a; /* hover effect */
+  background-color: #3a3a3a;
 }
 
 button {
@@ -90,6 +90,7 @@ input[type="text"] {
   border-radius: 4px;
   padding: 8px 12px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 select:focus,
@@ -98,18 +99,175 @@ input[type="text"]:focus {
   box-shadow: 0 0 5px #39ff14;
 }
 
+/* Modal Overlay - Fixed backdrop */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.1s ease-in-out, visibility 0.1s ease-in-out;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal Container */
 .modal {
   background-color: #2a2a2a;
   border: 1px solid #39ff14;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  transform: scale(0.8);
+  transition: transform 0.1s ease-in-out;
 }
 
-.filter-modal {
+.modal-overlay.show .modal {
+  transform: scale(1);
+}
+
+/* Modal Close Button */
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #39ff14;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #2dd40a;
+}
+
+/* Modal Content */
+.modal-content h3 {
+  color: #39ff14;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-content label {
+  color: #ffffff;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.modal-content input,
+.modal-content select {
+  padding: 8px 12px;
+  border: 1px solid #39ff14;
+  border-radius: 4px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+  outline: none;
+  border-color: #39ff14;
+  box-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
+}
+
+.modal-content option {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Button Group */
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
   margin-top: 20px;
+}
+
+.button-group button {
+  padding: 10px 20px;
+  border: 1px solid #39ff14;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.button-group button[type="submit"] {
+  background-color: #39ff14;
+  color: #1a1a1a;
+}
+
+.button-group button[type="submit"]:hover {
+  background-color: #2dd40a;
+  box-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+}
+
+.button-group button[type="button"] {
+  background-color: transparent;
+  color: #39ff14;
+}
+
+.button-group button[type="button"]:hover {
+  background-color: rgba(57, 255, 20, 0.1);
+}
+
+/* Filter Modal Specific Styles */
+.filter-modal .button-group {
+  justify-content: center;
+}
+
+.filter-modal .button-group button {
+  min-width: 100px;
 }
 
 .footer {
   padding: 8px;
+  margin-top: 40px;
+  text-align: center;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal {
+    width: 95%;
+    margin: 20px;
+    padding: 15px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
 }
