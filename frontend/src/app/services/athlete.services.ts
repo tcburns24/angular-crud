@@ -19,7 +19,7 @@ export interface Athlete {
   providedIn: 'root',
 })
 export class AthleteService {
-  private apiUrl = environment.apiUrl + '/athletes';
+  private apiUrl = environment.apiUrl;
 
   private athletesWithSportsSource = new BehaviorSubject<any[]>([]);
 
