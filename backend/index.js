@@ -18,10 +18,10 @@ const db = mysql.createPool({
   queueLimit: 0,
 });
 
-db.connect((err) => {
-  if (err) throw err;
-  console.log("✅ Connected to FreeSQLDatabase MySQL!");
-});
+// db.connect((err) => {
+//   if (err) throw err;
+//   console.log("✅ Connected to FreeSQLDatabase MySQL!");
+// });
 
 // ===================== 1) ATHLETES Endpoints =====================
 
