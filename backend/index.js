@@ -15,15 +15,15 @@ const pool = new Pool({
 });
 
 // database configuration
-const db = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 14,
-  queueLimit: 0,
-});
+// const db = mysql.createPool({
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
+//   waitForConnections: true,
+//   connectionLimit: 14,
+//   queueLimit: 0,
+// });
 
 // db.connect((err) => {
 //   if (err) throw err;
@@ -54,7 +54,7 @@ app.get("/api/athletes", (req, res) => {
       console.error("🚨 error on GET /athletes", err);
       return res.status(500).send("🚨 error on GET /athletes");
     }
-    res.json(result);
+    res.json(result.rows);
   });
 });
 
