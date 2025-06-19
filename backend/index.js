@@ -74,8 +74,12 @@ app.post("/api/athletes", (req, res) => {
     return res.status(400).send("Missing athlete request body field(s)");
   }
 
-  const sql = `insert into athletes (first_name, last_name, class_year, gender, fall_sport_id,
-    winter_sport_id, spring_sport_id) values ($1, $2, $3, $4, $5, $6, $7)`;
+  const sql = `
+  INSERT INTO athletes (
+    first_name, last_name, class_year, gender, fall_sport_id, winter_sport_id, spring_sport_id
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+  RETURNING athlete_id
+`;
   const values = [
     first_name,
     last_name,
@@ -93,7 +97,7 @@ app.post("/api/athletes", (req, res) => {
     }
     res.status(201).send({
       message: "✅ Athlete successfully POSTed",
-      athleteId: result.insertId,
+      athleteId: result.rows[0].athlete_id,
     });
   });
 });
@@ -214,11 +218,17 @@ app.get("/api/sports", (req, res) => {
 // POST a new sport
 app.post("/api/sports", (req, res) => {
   const { sport_name, season, max_roster_size } = req.body;
-  const sql =
-    "INSERT INTO sports (sport_name, season, max_roster_size) VALUES ($1, $2, $3)";
+  const sql = `
+    INSERT INTO sports (sport_name, season, max_roster_size) 
+    VALUES ($1, $2, $3) 
+    RETURNING sport_id
+  `;
   pool.query(sql, [sport_name, season, max_roster_size], (err, result) => {
-    if (err) return res.status(500).send("Error adding sport");
-    res.json({ message: "Sport added", sportId: result.insertId });
+    if (err) {
+      console.error("Error adding sport:", err);
+      return res.status(500).send("Error adding sport");
+    }
+    res.json({ message: "Sport added", sportId: result.rows[0].sport_id });
   });
 });
 
@@ -226,20 +236,30 @@ app.post("/api/sports", (req, res) => {
 app.put("/api/sports/:id", (req, res) => {
   const id = req.params.id;
   const { sport_name, season, max_roster_size } = req.body;
-  const sql =
-    "UPDATE sports SET sport_name=$1, season=$2, max_roster_size=$3 WHERE sport_id=$4";
+  const sql = `
+    UPDATE sports 
+    SET sport_name = $1, season = $2, max_roster_size = $3 
+    WHERE sport_id = $4
+    RETURNING *
+  `;
   pool.query(sql, [sport_name, season, max_roster_size, id], (err) => {
     if (err) return res.status(500).send("Error updating sport");
-    res.json({ message: "Sport updated" });
+    res.json({ message: "Sport updated", sport: result.rows[0] });
   });
 });
 
 // DELETE a sport
 app.delete("/api/sports/:id", (req, res) => {
   const id = req.params.id;
-  pool.query("DELETE FROM sports WHERE sport_id = $1", [id], (err) => {
+  const sql = `
+    DELETE FROM sports 
+    WHERE sport_id = $1 
+    RETURNING *
+  `;
+  pool.query(sql, [id], (err, result) => {
     if (err) return res.status(500).send("Error deleting sport");
-    res.json({ message: "Sport deleted" });
+    if (result.rowCount === 0) return res.status(404).send("Sport not found");
+    res.json({ message: "Sport deleted", sport: result.rows[0] });
   });
 });
 
