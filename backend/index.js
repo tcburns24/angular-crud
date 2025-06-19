@@ -75,7 +75,7 @@ app.post("/api/athletes", (req, res) => {
   }
 
   const sql = `insert into athletes (first_name, last_name, class_year, gender, fall_sport_id,
-    winter_sport_id, spring_sport_id) values (?, ?, ?, ?, ?, ?, ?)`;
+    winter_sport_id, spring_sport_id) values ($1, $2, $3, $4, $5, $6, $7)`;
   const values = [
     first_name,
     last_name,
@@ -111,15 +111,17 @@ app.put("/api/athletes/:id", (req, res) => {
     spring_sport_id,
   } = req.body;
 
-  const sql = `update athletes set
-                first_name = ?,
-                last_name = ?,
-                class_year = ?,
-                gender = ?,
-                fall_sport_id = ?, 
-                winter_sport_id = ?, 
-                spring_sport_id = ?
-              where athlete_id = ?`;
+  const sql = `
+  UPDATE athletes SET
+    first_name = $1,
+    last_name = $2,
+    class_year = $3,
+    gender = $4,
+    fall_sport_id = $5, 
+    winter_sport_id = $6, 
+    spring_sport_id = $7
+  WHERE athlete_id = $8
+`;
   const values = [
     first_name,
     last_name,
@@ -143,7 +145,7 @@ app.put("/api/athletes/:id", (req, res) => {
 // Endpoint: DELETE an athlete
 app.delete("/api/athletes/:id", (req, res) => {
   const id = req.params.id;
-  const sql = `delete from athletes where athlete_id = ?`;
+  const sql = `delete from athletes where athlete_id = $1`;
 
   pool.query(sql, [id], (err, result) => {
     if (err) {
@@ -213,7 +215,7 @@ app.get("/api/sports", (req, res) => {
 app.post("/api/sports", (req, res) => {
   const { sport_name, season, max_roster_size } = req.body;
   const sql =
-    "INSERT INTO sports (sport_name, season, max_roster_size) VALUES (?, ?, ?)";
+    "INSERT INTO sports (sport_name, season, max_roster_size) VALUES ($1, $2, $3)";
   pool.query(sql, [sport_name, season, max_roster_size], (err, result) => {
     if (err) return res.status(500).send("Error adding sport");
     res.json({ message: "Sport added", sportId: result.insertId });
@@ -225,7 +227,7 @@ app.put("/api/sports/:id", (req, res) => {
   const id = req.params.id;
   const { sport_name, season, max_roster_size } = req.body;
   const sql =
-    "UPDATE sports SET sport_name=?, season=?, max_roster_size=? WHERE sport_id=?";
+    "UPDATE sports SET sport_name=$1, season=$2, max_roster_size=$3 WHERE sport_id=$4";
   pool.query(sql, [sport_name, season, max_roster_size, id], (err) => {
     if (err) return res.status(500).send("Error updating sport");
     res.json({ message: "Sport updated" });
@@ -235,114 +237,9 @@ app.put("/api/sports/:id", (req, res) => {
 // DELETE a sport
 app.delete("/api/sports/:id", (req, res) => {
   const id = req.params.id;
-  pool.query("DELETE FROM sports WHERE sport_id = ?", [id], (err) => {
+  pool.query("DELETE FROM sports WHERE sport_id = $1", [id], (err) => {
     if (err) return res.status(500).send("Error deleting sport");
     res.json({ message: "Sport deleted" });
-  });
-});
-
-// ===============================================================
-// ===================== EMPLOYEES Endpoints =====================
-// ===============================================================
-
-// Endpoint: POST a new employee
-app.post("/api/employees", (req, res) => {
-  const { name, email, hometown, luckynumber, department, notes } = req.body;
-  const sql =
-    "INSERT INTO employees (name, email, hometown, luckynumber, department, notes) VALUES (?, ?, ?, ?, ?, ?)";
-  pool.query(
-    sql,
-    [name, email, hometown, luckynumber, department, notes],
-    (err, result) => {
-      if (err) return res.status(500).send(err);
-      res.send({ message: "employee added", employeeId: result.insertId });
-    }
-  );
-});
-
-// ENDPOINT: GET all employees
-app.get("/api/employees", (req, res) => {
-  pool.query("SELECT * FROM employees", (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.send(results);
-  });
-});
-
-// Endpoint: Delete an employee (by ID)
-app.delete("/api/employees/:id", (req, res) => {
-  const id = req.params.id;
-  pool.query("DELETE FROM employees WHERE id = ?", [id], (err, result) => {
-    if (err) return res.status(500).send(err);
-    res.send({
-      message: "Employee deleted",
-      affectedRows: result.affectedRows,
-    });
-  });
-});
-
-// Endpoint: Delete multiple employees in bulk
-app.post("/api/employees/bulk-delete", (req, res) => {
-  const ids = req.body.ids;
-
-  if (!Array.isArray(ids) || ids.length === 0) {
-    return res.status(500).send({ error: "You didn't provide any IDs" });
-  }
-
-  const placeholders = ids.map(() => "?").join(",");
-  const sql = `DELETE FROM employees WHERE id IN (${placeholders})`;
-
-  pool.query(sql, ids, (err, result) => {
-    if (err) return res.status(500).send(err);
-    res.send({
-      message: "All those employees are toast!🍞",
-      affectedRows: result.affectedRows,
-    });
-  });
-});
-
-// Endpoint: PUT (update) an employee
-app.put("/api/employees/:id", (req, res) => {
-  const id = req.params.id;
-  const { name, email, hometown, luckynumber, department, notes } = req.body;
-  const sql = `
-    UPDATE employees SET
-      name = ?,
-      email = ?,
-      hometown = ?,
-      luckynumber = ?,
-      department = ?,
-      notes = ?
-    WHERE id = ?
-  `;
-  const values = [name, email, hometown, luckynumber, department, notes, id];
-
-  pool.query(sql, values, (err, result) => {
-    if (err) {
-      console.error("Error updating employee: ", err);
-      return res.status(500).send("DB error");
-    }
-    res.send({ message: "Employee PUT'd successfully ✅" });
-  });
-});
-
-// Endpoint: GET stats
-app.get("/api/employees/analytics", (req, res) => {
-  const sql = `
-    SELECT 
-      COUNT(*) AS total,
-      AVG(luckynumber) AS averageLuckyNumber,
-      department,
-      COUNT(department) AS departmentCount
-    FROM employees
-    GROUP BY department
-  `;
-
-  pool.query(sql, (err, results) => {
-    if (err) {
-      console.error("couldn't pull up the stats: ", err);
-      return res.status(500).send("DB error (/stats)");
-    }
-    res.json(results);
   });
 });
 
