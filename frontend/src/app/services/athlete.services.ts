@@ -21,20 +21,10 @@ export interface Athlete {
 export class AthleteService {
   private apiUrl = environment.apiUrl;
 
-  private athletesWithSportsSource = new BehaviorSubject<any[]>([]);
-
-  athletesWithSports$ = this.athletesWithSportsSource.asObservable();
-
   constructor(private http: HttpClient) {}
 
   getAthletes(): Observable<Athlete[]> {
     return this.http.get<Athlete[]>(`${this.apiUrl}/athletes`);
-  }
-
-  getAthletesWithSports() {
-    return this.http
-      .get<any[]>(`${this.apiUrl}/athletes-with-sports`)
-      .pipe(tap((data) => this.athletesWithSportsSource.next(data)));
   }
 
   addAthlete(athlete: Athlete): Observable<any> {

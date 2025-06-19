@@ -160,58 +160,16 @@ app.delete("/api/athletes/:id", (req, res) => {
   });
 });
 
-// Endpoint: GET Fall, Winter, Spring sports for athlete
-app.get("/api/athletes-with-sports", (req, res) => {
-  const sql = `
-    SELECT 
-      a.athlete_id,
-      a.first_name,
-      a.last_name,
-      a.class_year,
-      a.gender,
-      a.fall_sport,
-      a.winter_sport,
-      a.spring_sport,
-      -- subqueries or left joins for each season:
-      (SELECT s.sport_name
-      FROM athlete_teams at
-      JOIN teams t ON at.team_id = t.team_id
-      JOIN sports s ON t.sport_id = s.sport_id
-      WHERE at.athlete_id = a.athlete_id AND s.season = 'fall'
-      LIMIT 1) AS fall_sport,
-
-      (SELECT s.sport_name
-      FROM athlete_teams at
-      JOIN teams t ON at.team_id = t.team_id
-      JOIN sports s ON t.sport_id = s.sport_id
-      WHERE at.athlete_id = a.athlete_id AND s.season = 'winter'
-      LIMIT 1) AS winter_sport,
-
-      (SELECT s.sport_name
-      FROM athlete_teams at
-      JOIN teams t ON at.team_id = t.team_id
-      JOIN sports s ON t.sport_id = s.sport_id
-      WHERE at.athlete_id = a.athlete_id AND s.season = 'spring'
-      LIMIT 1) AS spring_sport
-
-    FROM athletes a;`;
-
-  pool.query(sql, (err, result) => {
-    if (err) return res.status(500).send("Error athletes-with-sports");
-    res.json(result);
-  });
-});
-
 // ===================== 2) SPORTS Endpoints =====================
 // GET all sports
 app.get("/api/sports", (req, res) => {
   const sql = `SELECT * FROM sports`;
-  pool.query(sql, (err, results) => {
+  pool.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching sports", err);
       return res.status(500).send("DB Error");
     }
-    res.json(results);
+    res.json(result.rows);
   });
 });
 
