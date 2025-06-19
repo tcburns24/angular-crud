@@ -1,11 +1,18 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const mysql = require("mysql2");
+const { Pool } = require("pg");
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL, // we'll define this in Render
+  ssl: {
+    rejectUnauthorized: false, // Required for Supabase SSL
+  },
+});
 
 // database configuration
 const db = mysql.createPool({
@@ -42,7 +49,7 @@ app.get("/api/athletes", (req, res) => {
     LEFT JOIN sports sw ON a.winter_sport_id = sw.sport_id
     LEFT JOIN sports ss ON a.spring_sport_id = ss.sport_id;
   `;
-  db.query(sql, (err, result) => {
+  pool.query(sql, (err, result) => {
     if (err) {
       console.error("🚨 error on GET /athletes", err);
       return res.status(500).send("🚨 error on GET /athletes");
@@ -79,7 +86,7 @@ app.post("/api/athletes", (req, res) => {
     spring_sport_id,
   ];
 
-  db.query(sql, values, (err, result) => {
+  pool.query(sql, values, (err, result) => {
     if (err) {
       console.error("🚨 POST /athletes error:", err.sqlMessage);
       return res.status(500).send(err.sqlMessage);
@@ -124,7 +131,7 @@ app.put("/api/athletes/:id", (req, res) => {
     id,
   ];
 
-  db.query(sql, values, (err, result) => {
+  pool.query(sql, values, (err, result) => {
     if (err) {
       console.error("🚨 error on PUT /athletes/:id", err.sqlMessage);
       return res.status(500).send("db error");
@@ -138,7 +145,7 @@ app.delete("/api/athletes/:id", (req, res) => {
   const id = req.params.id;
   const sql = `delete from athletes where athlete_id = ?`;
 
-  db.query(sql, [id], (err, result) => {
+  pool.query(sql, [id], (err, result) => {
     if (err) {
       console.error("🚨 error on DELETE /athletes/:id", err);
       return res.status(500).send("db error");
@@ -183,7 +190,7 @@ app.get("/api/athletes-with-sports", (req, res) => {
 
     FROM athletes a;`;
 
-  db.query(sql, (err, result) => {
+  pool.query(sql, (err, result) => {
     if (err) return res.status(500).send("Error athletes-with-sports");
     res.json(result);
   });
@@ -193,7 +200,7 @@ app.get("/api/athletes-with-sports", (req, res) => {
 // GET all sports
 app.get("/api/sports", (req, res) => {
   const sql = `SELECT * FROM sports`;
-  db.query(sql, (err, results) => {
+  pool.query(sql, (err, results) => {
     if (err) {
       console.error("Error fetching sports", err);
       return res.status(500).send("DB Error");
@@ -207,7 +214,7 @@ app.post("/api/sports", (req, res) => {
   const { sport_name, season, max_roster_size } = req.body;
   const sql =
     "INSERT INTO sports (sport_name, season, max_roster_size) VALUES (?, ?, ?)";
-  db.query(sql, [sport_name, season, max_roster_size], (err, result) => {
+  pool.query(sql, [sport_name, season, max_roster_size], (err, result) => {
     if (err) return res.status(500).send("Error adding sport");
     res.json({ message: "Sport added", sportId: result.insertId });
   });
@@ -219,7 +226,7 @@ app.put("/api/sports/:id", (req, res) => {
   const { sport_name, season, max_roster_size } = req.body;
   const sql =
     "UPDATE sports SET sport_name=?, season=?, max_roster_size=? WHERE sport_id=?";
-  db.query(sql, [sport_name, season, max_roster_size, id], (err) => {
+  pool.query(sql, [sport_name, season, max_roster_size, id], (err) => {
     if (err) return res.status(500).send("Error updating sport");
     res.json({ message: "Sport updated" });
   });
@@ -228,7 +235,7 @@ app.put("/api/sports/:id", (req, res) => {
 // DELETE a sport
 app.delete("/api/sports/:id", (req, res) => {
   const id = req.params.id;
-  db.query("DELETE FROM sports WHERE sport_id = ?", [id], (err) => {
+  pool.query("DELETE FROM sports WHERE sport_id = ?", [id], (err) => {
     if (err) return res.status(500).send("Error deleting sport");
     res.json({ message: "Sport deleted" });
   });
@@ -243,7 +250,7 @@ app.post("/api/employees", (req, res) => {
   const { name, email, hometown, luckynumber, department, notes } = req.body;
   const sql =
     "INSERT INTO employees (name, email, hometown, luckynumber, department, notes) VALUES (?, ?, ?, ?, ?, ?)";
-  db.query(
+  pool.query(
     sql,
     [name, email, hometown, luckynumber, department, notes],
     (err, result) => {
@@ -255,7 +262,7 @@ app.post("/api/employees", (req, res) => {
 
 // ENDPOINT: GET all employees
 app.get("/api/employees", (req, res) => {
-  db.query("SELECT * FROM employees", (err, results) => {
+  pool.query("SELECT * FROM employees", (err, results) => {
     if (err) return res.status(500).send(err);
     res.send(results);
   });
@@ -264,7 +271,7 @@ app.get("/api/employees", (req, res) => {
 // Endpoint: Delete an employee (by ID)
 app.delete("/api/employees/:id", (req, res) => {
   const id = req.params.id;
-  db.query("DELETE FROM employees WHERE id = ?", [id], (err, result) => {
+  pool.query("DELETE FROM employees WHERE id = ?", [id], (err, result) => {
     if (err) return res.status(500).send(err);
     res.send({
       message: "Employee deleted",
@@ -284,7 +291,7 @@ app.post("/api/employees/bulk-delete", (req, res) => {
   const placeholders = ids.map(() => "?").join(",");
   const sql = `DELETE FROM employees WHERE id IN (${placeholders})`;
 
-  db.query(sql, ids, (err, result) => {
+  pool.query(sql, ids, (err, result) => {
     if (err) return res.status(500).send(err);
     res.send({
       message: "All those employees are toast!🍞",
@@ -309,7 +316,7 @@ app.put("/api/employees/:id", (req, res) => {
   `;
   const values = [name, email, hometown, luckynumber, department, notes, id];
 
-  db.query(sql, values, (err, result) => {
+  pool.query(sql, values, (err, result) => {
     if (err) {
       console.error("Error updating employee: ", err);
       return res.status(500).send("DB error");
@@ -330,7 +337,7 @@ app.get("/api/employees/analytics", (req, res) => {
     GROUP BY department
   `;
 
-  db.query(sql, (err, results) => {
+  pool.query(sql, (err, results) => {
     if (err) {
       console.error("couldn't pull up the stats: ", err);
       return res.status(500).send("DB error (/stats)");
