@@ -14,6 +14,8 @@ const pool = new Pool({
   },
 });
 
+console.log("🌟🌟DATABASE_URL:", process.env.DATABASE_URL);
+
 // database configuration
 // const db = mysql.createPool({
 //   host: process.env.DB_HOST,
