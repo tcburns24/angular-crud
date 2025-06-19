@@ -8,7 +8,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // we'll define this in Render
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false, // Required for Supabase SSL
   },
@@ -88,8 +88,8 @@ app.post("/api/athletes", (req, res) => {
 
   pool.query(sql, values, (err, result) => {
     if (err) {
-      console.error("🚨 POST /athletes error:", err.sqlMessage);
-      return res.status(500).send(err.sqlMessage);
+      console.error("🚨 POST /athletes error:", err);
+      return res.status(500).send(err.message);
     }
     res.status(201).send({
       message: "✅ Athlete successfully POSTed",
@@ -135,7 +135,7 @@ app.put("/api/athletes/:id", (req, res) => {
 
   pool.query(sql, values, (err, result) => {
     if (err) {
-      console.error("🚨 error on PUT /athletes/:id", err.sqlMessage);
+      console.error("🚨 error on PUT /athletes/:id", err);
       return res.status(500).send("db error");
     }
     res.send({ message: "Athlete successfully updated ✅" });
