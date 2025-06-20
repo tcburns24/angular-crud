@@ -7,12 +7,10 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const pool = new Pool({
-  host: address,
-  port: 5432,
-  user: "postgres",
-  password: process.env.DB_PASSWORD, // put your password in this env variable
-  database: "postgres",
-  ssl: { rejectUnauthorized: false },
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 console.log("🌟🌟DATABASE_URL:", process.env.DATABASE_URL);
