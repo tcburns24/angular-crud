@@ -32,7 +32,8 @@ app.get("/api/athletes", (req, res) => {
   FROM athletes a
   LEFT JOIN sports sf ON a.fall_sport_id = sf.sport_id
   LEFT JOIN sports sw ON a.winter_sport_id = sw.sport_id
-  LEFT JOIN sports ss ON a.spring_sport_id = ss.sport_id;
+  LEFT JOIN sports ss ON a.spring_sport_id = ss.sport_id
+  ORDER BY a.athlete_id;
 `;
   pool.query(sql, (err, result) => {
     if (err) {
