@@ -20,6 +20,7 @@ export class Athletes implements OnInit {
   currentEditId: number | null = null;
   selectedGender: string = 'M';
   allSports: Sport[] = [];
+  loading: boolean = false;
   sports: Record<string, Record<string, Sport[]>> = {
     M: {
       Fall: [],
@@ -56,8 +57,11 @@ export class Athletes implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadAthletes();
-    this.loadAllSports();
+    this.loading = true;
+
+    Promise.all([this.loadAthletes(), this.loadAllSports()]).finally(() => {
+      this.loading = false;
+    });
   }
 
   loadAllSports(): void {
